@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Our Little Universe</title>
+<style>
+body {
+  margin:0; font-family:'Segoe UI',sans-serif; background:#ffe6f0; overflow-x:hidden; background-size:cover; background-position:center;
+}
+
+/* PASSWORD SCREEN */
+#passwordScreen{
+  position:fixed; inset:0; background-color:rgba(255,182,193,0.95);
+  display:flex; justify-content:center; align-items:center; flex-direction:column; z-index:9999;
+}
+#passwordScreen.hidden{display:none;}
+.password-box{
+  background:#fff0f5; border-radius:20px; padding:30px; text-align:center;
+  box-shadow:0 8px 20px rgba(0,0,0,0.2); display:flex; flex-direction:column; align-items:center;
+  transition:transform 0.5s ease;
+}
+.password-box input{
+  padding:10px 40px 10px 10px; border-radius:10px; border:1px solid #ccc; width:150px; text-align:center; font-size:16px;
+  margin-top:10px;
+}
+.password-box button{
+  margin-top:15px; padding:8px 16px; border:none; border-radius:12px; background:#ffb6c1; color:white; cursor:pointer; font-weight:bold;
+  transition:background-color 0.3s;
+}
+.password-box button:hover{background:#e69aa9;}
+
+/* KANGEN SCREEN */
+#kangenScreen{
+  position:fixed; inset:0; background-color:rgba(255,182,193,0.95); display:none;
+  justify-content:center; align-items:center; flex-direction:column; z-index:9999; padding:20px;
+}
+#kangenScreen h2{
+  border:3px solid #ffb6c1; background-color:#ffffff; padding:20px;
+  border-radius:20px; color:#d36c6c; text-align:center; font-size:22px; max-width:400px;
+  margin-bottom:20px; animation:pulse 1.5s infinite alternate;
+}
+@keyframes pulse{0%{transform:scale(1);}100%{transform:scale(1.05);}}
+#kangenScreen button{
+  background-color:#ffb6c1; border:none; border-radius:12px; padding:10px 20px; margin:10px; color:white;
+  font-weight:bold; cursor:pointer; transition:background-color 0.3s, transform 0.2s;
+}
+#kangenScreen button:hover{background-color:#e69aa9; transform:scale(1.05);}
+
+/* HEADER */
+header{
+  text-align:center; padding:20px; background-color:#fff0f5; color:#a0522d; font-size:24px; font-weight:bold;
+  box-shadow:0 2px 8px rgba(0,0,0,0.1); display:flex; justify-content:center; align-items:center; gap:5px; position:relative;
+}
+header small{display:block; font-size:14px; color:#8b5e3c; margin-top:4px;}
+
+/* UPLOAD BACKGROUND */
+.upload-background{text-align:center; padding:20px;}
+
+/* GALLERY */
+.book{display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:20px; padding:30px; max-width:1200px; margin:auto;}
+.page{transform-style:preserve-3d; transition:transform 0.6s ease;}
+.page:hover{transform:rotateY(-5deg) scale(1.03);}
+.photo-card{position:relative; width:100%; border-radius:16px; overflow:hidden; box-shadow:0 4px 12px rgba(0,0,0,0.1); background-color:#fff; transition:transform 0.3s;}
+.photo-card img{width:100%; display:block; border-radius:12px;}
+.upload-box-inline{text-align:center; margin-top:10px;}
+.upload-box-inline input{margin:5px;}
+.prayer-box{padding:10px; background-color:#fffafc; border-top:1px solid #eee;}
+.prayer-box textarea{width:100%; height:80px; resize:none; padding:8px; border-radius:8px; border:1px solid #ccc; font-family:inherit;}
+.prayer-box button{margin-top:8px; padding:6px 12px; border:none; border-radius:8px; background:#ffb6c1; color:white; cursor:pointer;}
+
+/* OUR SONGS */
+.songs-section{padding:40px 20px; background:#fff0f5; text-align:center;}
+.songs-section h2{color:#a0522d; margin-bottom:20px;}
+.songs-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:20px; max-width:1000px; margin:auto;}
+.song-card{background:#fff; border-radius:16px; box-shadow:0 4px 12px rgba(0,0,0,0.1); padding:15px;}
+.song-card img{width:100%; border-radius:12px; margin-bottom:10px;}
+.song-card input{display:block; margin:8px auto;}
+.song-card iframe{width:100%; border-radius:12px; margin-top:10px;}
+</style>
+</head>
+<body>
+
+<!-- PASSWORD SCREEN -->
+<div id="passwordScreen">
+  <div class="password-box" id="passwordBox">
+    <h2>Masukkan Sandi 🔒</h2>
+    <input type="password" id="passwordInput" placeholder="" />
+    <br>
+    <button onclick="checkPassword()">Masuk</button>
+  </div>
+</div>
+
+<!-- KANGEN SCREEN -->
+<div id="kangenScreen">
+  <h2>Seberapaaa kangennnn nihhhh samaa kitaaaa?</h2>
+  <button onclick="startGallery()">Kangen nihh</button>
+  <button onclick="startGallery()">GA USAH DITANYA SIHH, KANGENNNN BANGETTTTTT</button>
+</div>
+
+<!-- HEADER -->
+<header>
+  Our Little Universe 🤍🎀
+  <small>dunia Meila dan Rafael</small>
+</header>
+
+<!-- UPLOAD BACKGROUND -->
+<div class="upload-background">
+  <label for="bgInput">Pilih Background:</label>
+  <input type="file" id="bgInput" accept="image/*" />
+</div>
+
+<!-- GALLERY -->
+<div class="book" id="bookGallery"></div>
+
+<!-- OUR SONGS -->
+<section class="songs-section">
+  <h2>🎶 Lagu-lagu favorit kitaa</h2>
+  <div class="songs-grid" id="songsGrid"></div>
+  
+  <!-- TIMER HUBUNGAN -->
+  <div id="loveTimer" style="margin-top:20px; font-size:18px; color:#a0522d; font-weight:bold;">
+    Kami selaluu samaa-samaa sejakk: <span id="timerDisplay">0 bulan 0 hari 0 jam 0 menit 0 detik</span>
+  </div>
+</section>
+
+<script>
+// PASSWORD SCREEN
+function checkPassword(){
+  const input=document.getElementById('passwordInput').value;
+  if(input==='060825'){
+    const box=document.getElementById('passwordBox');
+    box.style.transform='scale(1.2)';
+    setTimeout(()=>{
+      document.getElementById('passwordScreen').classList.add('hidden');
+      document.getElementById('kangenScreen').style.display='flex';
+    },500);
+  } else { alert('Sandi salah!'); }
+}
+function startGallery(){ document.getElementById('kangenScreen').style.display='none'; }
+
+// BACKGROUND UPLOAD
+document.getElementById('bgInput').addEventListener('change',function(e){
+  const file=e.target.files[0];
+  if(file){
+    const reader=new FileReader();
+    reader.onload=function(ev){ document.body.style.backgroundImage=`url('${ev.target.result}')`; }
+    reader.readAsDataURL(file);
+  }
+});
+
+// GALLERY
+const bookGallery=document.getElementById('bookGallery');
+for(let i=1;i<=15;i++){
+  const page=document.createElement('div'); page.className='page';
+  page.innerHTML=`<div class="photo-card">
+    <img src="https://via.placeholder.com/300x200?text=Foto+${i}" alt="Foto ${i}" />
+    <div class="upload-box-inline"><input type="file" accept="image/*" /></div>
+    <div class="prayer-box">
+      <textarea placeholder="Doa, pesan atau kalimat berkesan kamu..."></textarea>
+      <button>Simpan</button>
+    </div>
+  </div>`;
+  bookGallery.appendChild(page);
+}
+
+// Upload foto gallery
+const fileInputs=document.querySelectorAll('.upload-box-inline input[type="file"]');
+const imageTags=document.querySelectorAll('.photo-card img');
+fileInputs.forEach((input,index)=>{
+  input.addEventListener('change',function(e){
+    const file=e.target.files[0];
+    if(file){
+      const reader=new FileReader();
+      reader.onload=function(ev){ imageTags[index].src=ev.target.result; }
+      reader.readAsDataURL(file);
+    }
+  });
+});
+
+// Save prayers
+document.querySelectorAll('.prayer-box button').forEach((btn,index)=>{
+  btn.addEventListener('click',()=>{
+    const text=btn.previousElementSibling.value;
+    localStorage.setItem(`prayer${index}`,text);
+    alert('Doa tersimpan!');
+  });
+});
+document.querySelectorAll('.prayer-box textarea').forEach((ta,index)=>{
+  const saved=localStorage.getItem(`prayer${index}`);
+  if(saved) ta.value=saved;
+});
+
+// OUR SONGS 12 LAGU DENGAN JUDUL ASLI
+const songs=[
+  {title:'Out Of My League - LANY',spotify:'https://open.spotify.com/embed/track/3JSATYGj6yxP1Vc1b49SSK'},
+  {title:'True - Spandau Ballet',spotify:'https://open.spotify.com/embed/track/10I09MLZCY4pK37XxAfkw0'},
+  {title:'Kangen - Dewa 19',spotify:'https://open.spotify.com/embed/track/3ZyMRe0jlSqffPBMeHUZFX'},
+  {title:'Terbuang Dalam Waktu - Barasuara',spotify:'https://open.spotify.com/embed/track/5fmyW3X3kncOOVlmcWhORH'},
+  {title:'Percayalah – Afgan',spotify:'https://open.spotify.com/embed/track/71ffTsV63O9RsoWJ1iJOet'},
+  {title:'Pandangan Pertama – RAN',spotify:'https://open.spotify.com/embed/track/7vARkAvliy40kkanvCQvSR'},
+  {title:'Photograph - Ed Sheeran',spotify:'https://open.spotify.com/embed/track/1HNkqx9Ahdgi1Ixy2xkKkL'},
+  {title:'10.000 Hours - Justin Bieber',spotify:'https://open.spotify.com/embed/track/2wrJq5XKLnmhRXHIAf9xBa'},
+  {title:'Goodness of God – Bethel Music',spotify:'https://open.spotify.com/embed/track/0HE3SH6fvxdRIUq54HjVq0'},
+  {title:'Anything 4 You - LANY',spotify:'https://open.spotify.com/embed/track/4M1wfKr9MlDT2jVgDCMAnA'},
+  {title:'Meant 2 Be - Shakira Jasmine ',spotify:'https://open.spotify.com/embed/track/1xzHcMGICraPjK2FMI53Ve'},
+  {title:'Best Part - Daniel Caesar',spotify:'https://open.spotify.com/embed/track/1Q7EgiMOuwDcB0PJC6AzON'}
+];
+const songsGrid=document.getElementById('songsGrid');
+songs.forEach((song,index)=>{
+  const card=document.createElement('div'); card.className='song-card';
+  card.innerHTML=`<img src="https://via.placeholder.com/300x300?text=Cover+${index+1}" alt="Cover ${index+1}" />
+  <input type="file" accept="image/*" />
+  <h3>${song.title}</h3>
+  <iframe src="${song.spotify}" width="100%" height="80" frameborder="0" allow="autoplay; clipboard-write; encrypted-media; picture-in-picture"></iframe>`;
+  songsGrid.appendChild(card);
+});
+// Upload cover songs
+const songInputs=document.querySelectorAll('.song-card input[type="file"]');
+const songImgs=document.querySelectorAll('.song-card img');
+songInputs.forEach((input,index)=>{
+  input.addEventListener('change',function(e){
+    const file=e.target.files[0];
+    if(file){
+      const reader=new FileReader();
+      reader.onload=function(ev){ songImgs[index].src=ev.target.result; }
+      reader.readAsDataURL(file);
+    }
+  });
+});
+
+// TIMER HITUNG SEJAK 6 AGUSTUS 2025
+function updateLoveTimer() {
+  const startDate = new Date('2025-08-06T00:00:00'); // tanggal jadian
+  const now = new Date();
+  let diff = now - startDate; // dalam milidetik
+
+  // hitung bulan
+  const startMonth = startDate.getMonth();
+  const startYear = startDate.getFullYear();
+  const currentMonth = now.getMonth();
+  const currentYear = now.getFullYear();
+  let months = (currentYear - startYear) * 12 + (currentMonth - startMonth);
+
+  // hitung hari, jam, menit, detik
+  const tempDate = new Date(startDate.getTime());
+  tempDate.setMonth(tempDate.getMonth() + months);
+  let days = Math.floor((now - tempDate) / (1000 * 60 * 60 * 24));
+  tempDate.setDate(tempDate.getDate() + days);
+  let hours = now.getHours() - tempDate.getHours();
+  let minutes = now.getMinutes() - tempDate.getMinutes();
+  let seconds = now.getSeconds() - tempDate.getSeconds();
+
+  // koreksi jika negatif
+  if(seconds < 0){ seconds += 60; minutes--; }
+  if(minutes < 0){ minutes += 60; hours--; }
+  if(hours < 0){ hours += 24; days--; }
+  if(days < 0){ 
+    const prevMonth = new Date(now.getFullYear(), now.getMonth(), 0); 
+    days += prevMonth.getDate(); months--;
+  }
+
+  document.getElementById('timerDisplay').textContent = `${months} bulan ${days} hari ${hours} jam ${minutes} menit ${seconds} detik`;
+}
+setInterval(updateLoveTimer, 1000);
+updateLoveTimer(); // jalankan langsung saat load
+</script>
+</body>
+</html>
